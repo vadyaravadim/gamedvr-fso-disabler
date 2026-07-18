@@ -113,7 +113,12 @@ foreach ($t in $tweaks) {
 # "=-" deletes a value that did not exist before; reg import may leave an
 # empty key behind, which is harmless.
 # ============================================================================
-$undoFile = Join-Path $PSScriptRoot ("gamedvr_fso_undo_{0}.reg" -f (Get-Date -Format 'yyyyMMdd_HHmmss'))
+# The suffix loop keeps two runs within the same second from clobbering
+# each other's undo file.
+$stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
+$undoFile = Join-Path $PSScriptRoot "gamedvr_fso_undo_$stamp.reg"
+$n = 1
+while (Test-Path $undoFile) { $undoFile = Join-Path $PSScriptRoot ("gamedvr_fso_undo_{0}_{1}.reg" -f $stamp, $n++) }
 $undo = New-Object System.Text.StringBuilder
 [void]$undo.AppendLine('Windows Registry Editor Version 5.00')
 [void]$undo.AppendLine('')
