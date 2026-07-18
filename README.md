@@ -79,7 +79,7 @@ Applying...
 SIGN OUT and back in (or reboot) for all changes to take effect.
 ```
 
-> `[ok]` = already at the target value on this machine, `[->]` = will be changed. Values already correct are still recorded in the undo file.
+> `[ok]` = already at the target value on this machine, `[->]` = will be changed. Values already correct are still recorded in the undo file. If **all** values are already at target, the script changes nothing and writes no undo file.
 
 ## Settings Changed
 
@@ -127,7 +127,7 @@ Get-ItemProperty 'HKCU:\System\GameConfigStore' -Name GameDVR_FSEBehaviorMode
 
 Double-click the `gamedvr_fso_undo_*.reg` file saved next to the script, confirm the merge, then sign out and back in. It restores the exact previous state of every value — including deleting values that didn't exist before (like the `AllowGameDVR` policy on a default system).
 
-Ran the script several times? Undo files are per-run snapshots — apply them newest-to-oldest; only the oldest holds the original state.
+Ran the script several times? A run that finds nothing to change writes no undo file. If several runs did change values (something re-enabled them in between), apply their undo files newest-to-oldest — only the oldest holds the original state.
 
 ## FAQ
 

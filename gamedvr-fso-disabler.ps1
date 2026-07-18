@@ -11,8 +11,9 @@
 .NOTES
     Sign out and back in (or reboot) for all changes to take effect.
     Revert: double-click the gamedvr_fso_undo_*.reg file, then sign out/in.
-    Each undo file is a per-run snapshot: after several runs, apply them
-    newest-to-oldest — only the oldest file holds the original state.
+    Each undo file is a per-run snapshot (a run that changes nothing writes
+    no undo file); after several runs, apply them newest-to-oldest — only
+    the oldest file holds the original state.
 .EXAMPLE
     .\gamedvr-fso-disabler.ps1
 
@@ -55,7 +56,9 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
                      '-UserSid', $identity.User.Value)
         Start-Process -FilePath 'powershell.exe' -ArgumentList $argList -Verb RunAs
     } catch {
-        Write-Host "ERROR: elevation was refused. Run this script as Administrator." -ForegroundColor Red
+        # Not always a refusal (UAC service disabled, ...) - show the real cause.
+        Write-Host "ERROR: elevation failed ($($_.Exception.Message)). Run this script as Administrator." -ForegroundColor Red
+        Read-Host "Press Enter to close" | Out-Null
     }
     return
 }
@@ -64,6 +67,7 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
 if ($UserSid -and $UserSid -ne $identity.User.Value) {
     $hkcu = "Registry::HKEY_USERS\$UserSid"
     Write-Host "Elevated as a different account - per-user values go to the launching user's hive (HKEY_USERS\$UserSid)." -ForegroundColor Yellow
+    Write-Host "NOTE: re-importing the undo file's HKEY_LOCAL_MACHINE section will also require admin rights." -ForegroundColor Yellow
 } else {
     $hkcu = 'HKCU:'
 }
@@ -71,6 +75,16 @@ if ($UserSid -and $UserSid -ne $identity.User.Value) {
 function ConvertTo-RawRegPath([string]$Path) {
     # Provider path -> raw path for the .reg format
     ($Path -replace '^Registry::', '') -replace '^HKCU:', 'HKEY_CURRENT_USER' -replace '^HKLM:', 'HKEY_LOCAL_MACHINE'
+}
+
+# .reg text for a value, preserving its original type: a foreign tweaker may
+# have left one of these as REG_SZ / QWORD / binary instead of the expected DWORD.
+function ConvertTo-RegValueText($Value) {
+    if ($Value -is [int])    { return 'dword:{0:x8}' -f $Value }
+    if ($Value -is [long])   { return 'hex(b):' + (([BitConverter]::GetBytes($Value) | ForEach-Object { '{0:x2}' -f $_ }) -join ',') }
+    if ($Value -is [byte[]]) { return 'hex:' + (($Value | ForEach-Object { '{0:x2}' -f $_ }) -join ',') }
+    if ($Value -is [string]) { return '"{0}"' -f ($Value -replace '\\', '\\' -replace '"', '\"') }
+    throw "cannot snapshot a value of type $($Value.GetType().Name) into the undo file"
 }
 
 $gcs = "$hkcu\System\GameConfigStore"
@@ -95,24 +109,34 @@ Write-Host "  GAMEDVR + FSO DISABLER" -ForegroundColor Cyan
 Write-Host "===================================" -ForegroundColor Cyan
 Write-Host ""
 
-# ============================================================================
-# Current state
-# ============================================================================
 Write-Host "Current state -> target:"
 foreach ($t in $tweaks) {
     $old = (Get-ItemProperty -Path $t.Path -Name $t.Name -ErrorAction SilentlyContinue).($t.Name)
+    # strict [int] check: a foreign REG_SZ '0' compares loosely equal to 0
+    # but must still be rewritten as a DWORD
+    $ok = ($old -is [int]) -and ($old -eq $t.Value)
+    $t | Add-Member NoteProperty Old $old
+    $t | Add-Member NoteProperty Ok $ok
     $oldText = if ($null -eq $old) { '(absent)' } else { $old }
-    $mark = if ($old -eq $t.Value) { 'ok' } else { '->' }
-    Write-Host ("  [{0}] {1} = {2} -> {3}  ({4})" -f $mark, $t.Name, $oldText, $t.Value, $t.Label) -ForegroundColor $(if ($old -eq $t.Value) { 'DarkGray' } else { 'Yellow' })
+    $mark = if ($ok) { 'ok' } else { '->' }
+    Write-Host ("  [{0}] {1} = {2} -> {3}  ({4})" -f $mark, $t.Name, $oldText, $t.Value, $t.Label) -ForegroundColor $(if ($ok) { 'DarkGray' } else { 'Yellow' })
 }
 
-# ============================================================================
+# Nothing to change -> no undo file: a repeat-run snapshot would record the
+# already-tweaked state, and double-clicking that newest file would silently
+# "revert" to it instead of the original.
+if (-not ($tweaks | Where-Object { -not $_.Ok })) {
+    Write-Host ""
+    Write-Host "All values already at target - nothing to do, no undo file written." -ForegroundColor Green
+    Wait-IfElevatedWindow
+    return
+}
+
 # Undo file: record the CURRENT state of every value BEFORE changing anything.
 # Double-clicking it reverts everything. Value-level on purpose: a "[-key]"
 # stanza would also wipe values this tool never wrote (bitrates, hotkeys, ...).
 # "=-" deletes a value that did not exist before; reg import may leave an
 # empty key behind, which is harmless.
-# ============================================================================
 # The suffix loop keeps two runs within the same second from clobbering
 # each other's undo file.
 $stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
@@ -125,11 +149,10 @@ $undo = New-Object System.Text.StringBuilder
 foreach ($group in ($tweaks | Group-Object Path)) {
     [void]$undo.AppendLine("[$(ConvertTo-RawRegPath $group.Name)]")
     foreach ($t in $group.Group) {
-        $old = (Get-ItemProperty -Path $t.Path -Name $t.Name -ErrorAction SilentlyContinue).($t.Name)
-        if ($null -eq $old) {
+        if ($null -eq $t.Old) {
             [void]$undo.AppendLine(('"{0}"=-' -f $t.Name))                       # value was absent -> delete it
         } else {
-            [void]$undo.AppendLine(('"{0}"=dword:{1:x8}' -f $t.Name, [int]$old))
+            [void]$undo.AppendLine(('"{0}"={1}' -f $t.Name, (ConvertTo-RegValueText $t.Old)))
         }
     }
     [void]$undo.AppendLine('')
@@ -139,9 +162,6 @@ Write-Host ""
 Write-Host "Undo file saved: $undoFile" -ForegroundColor Cyan
 Write-Host ""
 
-# ============================================================================
-# Apply
-# ============================================================================
 Write-Host "Applying..."
 foreach ($t in $tweaks) {
     if (-not (Test-Path $t.Path)) {
@@ -151,9 +171,6 @@ foreach ($t in $tweaks) {
     Write-Host ("  [OK ] {0} = {1}" -f $t.Name, $t.Value) -ForegroundColor Green
 }
 
-# ============================================================================
-# Summary
-# ============================================================================
 Write-Host ""
 Write-Host "===================================" -ForegroundColor Cyan
 Write-Host "  DONE" -ForegroundColor Cyan
