@@ -12,13 +12,13 @@
     Sign out and back in (or reboot) for all changes to take effect.
     Revert: double-click the gamedvr_fso_undo_*.reg file, then sign out/in.
     Each undo file is a per-run snapshot (a run that changes nothing writes
-    no undo file); after several runs, apply them newest-to-oldest — only
+    no undo file); after several runs, apply them newest-to-oldest - only
     the oldest file holds the original state.
 .EXAMPLE
     .\gamedvr-fso-disabler.ps1
 
     Double-click Run.bat, or right-click this file > Run with PowerShell.
-    No parameters needed — it elevates itself.
+    No parameters needed - it elevates itself.
 .LINK
     https://github.com/vadyaravadim/gamedvr-fso-disabler
 #>
@@ -78,7 +78,7 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
     Write-Host "Not running as Administrator. Requesting elevation..." -ForegroundColor Yellow
     try {
         # Forward the launching user's SID: if UAC elevates to a DIFFERENT admin
-        # account, HKCU in the elevated process is that admin's hive — the
+        # account, HKCU in the elevated process is that admin's hive - the
         # per-user values would silently land in the wrong profile.
         $argList = @('-NoProfile', '-ExecutionPolicy', 'Bypass',
                      '-File', "`"$PSCommandPath`"", '-Elevated',
