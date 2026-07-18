@@ -28,10 +28,10 @@ Zero install. Zero dependencies. Built-in `.reg` undo.
 **One-liner** instead (in any PowerShell — it self-elevates):
 
 ```powershell
-irm https://raw.githubusercontent.com/vadyaravadim/gamedvr-fso-disabler/main/gamedvr-fso-disabler.ps1 -OutFile "$env:USERPROFILE\gamedvr-fso-disabler.ps1"; powershell -NoProfile -ExecutionPolicy Bypass -File "$env:USERPROFILE\gamedvr-fso-disabler.ps1"
+irm https://raw.githubusercontent.com/vadyaravadim/gamedvr-fso-disabler/main/gamedvr-fso-disabler.ps1 | iex
 ```
 
-The script is saved to your user profile (not a temp folder) on purpose: the `gamedvr_fso_undo_*.reg` rollback file is written next to it and must survive automatic temp cleanup.
+When run this way, the script downloads itself to your user profile (not a temp folder) before elevating: the `gamedvr_fso_undo_*.reg` rollback file is written next to it and must survive automatic temp cleanup.
 
 **Or clone:**
 

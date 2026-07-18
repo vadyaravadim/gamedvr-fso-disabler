@@ -47,12 +47,23 @@ $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = New-Object Security.Principal.WindowsPrincipal($identity)
 if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "Not running as Administrator. Requesting elevation..." -ForegroundColor Yellow
+    $scriptPath = $PSCommandPath
+    if (-not $scriptPath) {
+        # Launched via `irm ... | iex` - no file on disk to relaunch, and the
+        # piped text is not recoverable from inside iex ($MyInvocation there
+        # holds the caller's command line, not the script body). Download to a
+        # file and elevate that, so -Elevated/-UserSid still flow through.
+        # USERPROFILE, not TEMP: the undo .reg is written next to the script
+        # and must survive automatic temp cleanup.
+        $scriptPath = Join-Path $env:USERPROFILE 'gamedvr-fso-disabler.ps1'
+        Invoke-RestMethod 'https://raw.githubusercontent.com/vadyaravadim/gamedvr-fso-disabler/main/gamedvr-fso-disabler.ps1' -OutFile $scriptPath
+    }
     try {
         # Forward the launching user's SID: if UAC elevates to a DIFFERENT admin
         # account, HKCU in the elevated process is that admin's hive — the
         # per-user values would silently land in the wrong profile.
         $argList = @('-NoProfile', '-ExecutionPolicy', 'Bypass',
-                     '-File', "`"$PSCommandPath`"", '-Elevated',
+                     '-File', "`"$scriptPath`"", '-Elevated',
                      '-UserSid', $identity.User.Value)
         Start-Process -FilePath 'powershell.exe' -ArgumentList $argList -Verb RunAs
     } catch {
@@ -140,9 +151,11 @@ if (-not ($tweaks | Where-Object { -not $_.Ok })) {
 # The suffix loop keeps two runs within the same second from clobbering
 # each other's undo file.
 $stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
-$undoFile = Join-Path $PSScriptRoot "gamedvr_fso_undo_$stamp.reg"
+# $PSScriptRoot is empty when run via `irm | iex` in an already-admin console
+$undoDir = if ($PSScriptRoot) { $PSScriptRoot } else { $env:USERPROFILE }
+$undoFile = Join-Path $undoDir "gamedvr_fso_undo_$stamp.reg"
 $n = 1
-while (Test-Path $undoFile) { $undoFile = Join-Path $PSScriptRoot ("gamedvr_fso_undo_{0}_{1}.reg" -f $stamp, $n++) }
+while (Test-Path $undoFile) { $undoFile = Join-Path $undoDir ("gamedvr_fso_undo_{0}_{1}.reg" -f $stamp, $n++) }
 $undo = New-Object System.Text.StringBuilder
 [void]$undo.AppendLine('Windows Registry Editor Version 5.00')
 [void]$undo.AppendLine('')
