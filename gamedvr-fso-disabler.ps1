@@ -40,30 +40,48 @@ function Wait-IfElevatedWindow {
 trap {
     Write-Host "ERROR: $_" -ForegroundColor Red
     Wait-IfElevatedWindow
-    exit 1
+    # Under `irm | iex` this runs inside the user's own session, where `exit`
+    # would close their console - rethrow so only the piped script stops.
+    if ($PSCommandPath) { exit 1 }
+    break
+}
+
+# Launched via `irm <url> | iex` - no file on disk. The undo .reg is written
+# next to the script, so a stable path is required: save the script to the
+# user profile (not TEMP - the undo file must survive automatic temp cleanup)
+# and rerun it from there (the rerun handles elevation).
+if (-not $PSCommandPath) {
+    # The piped text is not recoverable from inside iex ($MyInvocation there
+    # holds the caller's command line, not the script body) - download the
+    # script.
+    try {
+        $body = Invoke-RestMethod 'https://raw.githubusercontent.com/vadyaravadim/gamedvr-fso-disabler/main/gamedvr-fso-disabler.ps1' -TimeoutSec 30
+    } catch {
+        Write-Host "ERROR: could not download the script ($($_.Exception.Message)). Check your internet connection, or save the script to a file and run it from there." -ForegroundColor Red
+        return
+    }
+    $saved = Join-Path $env:USERPROFILE 'gamedvr-fso-disabler.ps1'
+    if ((Test-Path $saved) -and ([IO.File]::ReadAllText($saved) -cne $body)) {
+        Copy-Item $saved "$saved.bak" -Force
+        Write-Host "Existing $saved differs - previous copy kept as $saved.bak" -ForegroundColor Yellow
+    }
+    [IO.File]::WriteAllText($saved, $body, [Text.Encoding]::UTF8)
+    Write-Host "Script saved to: $saved (the undo file will be written next to it)" -ForegroundColor Cyan
+    powershell -NoProfile -ExecutionPolicy Bypass -File $saved
+    # The rerun's exit code stays in $LASTEXITCODE for scripted callers.
+    return
 }
 
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = New-Object Security.Principal.WindowsPrincipal($identity)
 if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "Not running as Administrator. Requesting elevation..." -ForegroundColor Yellow
-    $scriptPath = $PSCommandPath
-    if (-not $scriptPath) {
-        # Launched via `irm ... | iex` - no file on disk to relaunch, and the
-        # piped text is not recoverable from inside iex ($MyInvocation there
-        # holds the caller's command line, not the script body). Download to a
-        # file and elevate that, so -Elevated/-UserSid still flow through.
-        # USERPROFILE, not TEMP: the undo .reg is written next to the script
-        # and must survive automatic temp cleanup.
-        $scriptPath = Join-Path $env:USERPROFILE 'gamedvr-fso-disabler.ps1'
-        Invoke-RestMethod 'https://raw.githubusercontent.com/vadyaravadim/gamedvr-fso-disabler/main/gamedvr-fso-disabler.ps1' -OutFile $scriptPath
-    }
     try {
         # Forward the launching user's SID: if UAC elevates to a DIFFERENT admin
         # account, HKCU in the elevated process is that admin's hive — the
         # per-user values would silently land in the wrong profile.
         $argList = @('-NoProfile', '-ExecutionPolicy', 'Bypass',
-                     '-File', "`"$scriptPath`"", '-Elevated',
+                     '-File', "`"$PSCommandPath`"", '-Elevated',
                      '-UserSid', $identity.User.Value)
         Start-Process -FilePath 'powershell.exe' -ArgumentList $argList -Verb RunAs
     } catch {
@@ -151,11 +169,9 @@ if (-not ($tweaks | Where-Object { -not $_.Ok })) {
 # The suffix loop keeps two runs within the same second from clobbering
 # each other's undo file.
 $stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
-# $PSScriptRoot is empty when run via `irm | iex` in an already-admin console
-$undoDir = if ($PSScriptRoot) { $PSScriptRoot } else { $env:USERPROFILE }
-$undoFile = Join-Path $undoDir "gamedvr_fso_undo_$stamp.reg"
+$undoFile = Join-Path $PSScriptRoot "gamedvr_fso_undo_$stamp.reg"
 $n = 1
-while (Test-Path $undoFile) { $undoFile = Join-Path $undoDir ("gamedvr_fso_undo_{0}_{1}.reg" -f $stamp, $n++) }
+while (Test-Path $undoFile) { $undoFile = Join-Path $PSScriptRoot ("gamedvr_fso_undo_{0}_{1}.reg" -f $stamp, $n++) }
 $undo = New-Object System.Text.StringBuilder
 [void]$undo.AppendLine('Windows Registry Editor Version 5.00')
 [void]$undo.AppendLine('')

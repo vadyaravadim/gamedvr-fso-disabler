@@ -31,7 +31,7 @@ Zero install. Zero dependencies. Built-in `.reg` undo.
 irm https://raw.githubusercontent.com/vadyaravadim/gamedvr-fso-disabler/main/gamedvr-fso-disabler.ps1 | iex
 ```
 
-When run this way, the script downloads itself to your user profile (not a temp folder) before elevating: the `gamedvr_fso_undo_*.reg` rollback file is written next to it and must survive automatic temp cleanup.
+The script downloads itself to `%USERPROFILE%\gamedvr-fso-disabler.ps1` (not a temp folder) on purpose: the `gamedvr_fso_undo_*.reg` rollback file is written next to it and must survive automatic temp cleanup. An existing copy at that path that differs is kept as `.bak`.
 
 **Or clone:**
 
