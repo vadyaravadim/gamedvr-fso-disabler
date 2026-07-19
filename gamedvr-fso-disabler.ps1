@@ -1,3 +1,35 @@
+<#PSScriptInfo
+
+.VERSION 1.0.0
+
+.GUID 87a31f64-6a9a-4a19-8b74-4a634e74fb59
+
+.AUTHOR vadyaravadim
+
+.COMPANYNAME
+
+.COPYRIGHT
+
+.TAGS Windows Windows10 Windows11 Gaming GameDVR GameBar FullscreenOptimizations FSO Performance Stutter Tweak Registry
+
+.LICENSEURI https://github.com/vadyaravadim/gamedvr-fso-disabler/blob/main/LICENSE
+
+.PROJECTURI https://github.com/vadyaravadim/gamedvr-fso-disabler
+
+.ICONURI
+
+.EXTERNALMODULEDEPENDENCIES
+
+.REQUIREDSCRIPTS
+
+.EXTERNALSCRIPTDEPENDENCIES
+
+.RELEASENOTES
+
+.PRIVATEDATA
+
+#>
+
 <#
 .SYNOPSIS
     Disables Game DVR / Xbox Game Bar capture and Fullscreen Optimizations on Windows 10/11.
