@@ -12,7 +12,7 @@ Zero install. Zero dependencies. Built-in `.reg` undo.
 [![Windows 10/11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows)](https://www.microsoft.com/windows)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?logo=powershell&logoColor=white)](https://docs.microsoft.com/en-us/powershell/)
 [![Latest release](https://img.shields.io/github/v/release/vadyaravadim/gamedvr-fso-disabler)](https://github.com/vadyaravadim/gamedvr-fso-disabler/releases)
-![GitHub Stars](https://img.shields.io/github/stars/vadyaravadim/=social)
+![GitHub Stars](https://img.shields.io/github/stars/vadyaravadim/gamedvr-fso-disabler?style=social)
 
 </div>
 
