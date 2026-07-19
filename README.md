@@ -21,14 +21,7 @@ Zero install. Zero dependencies. Built-in `.reg` undo.
 
 ## Quick Start
 
-**Easiest — download & double-click:**
-
-1. Click **Code ▸ Download ZIP** at the top of this page, then unzip.
-2. Double-click **`Run.bat`**.
-3. Click **Yes** on the UAC prompt (the script requests admin rights on its own).
-4. **Sign out and back in** (or reboot).
-
-**Or from the PowerShell Gallery:**
+**Easiest — from the PowerShell Gallery:**
 
 ```powershell
 Install-Script gamedvr-fso-disabler
@@ -53,7 +46,9 @@ cd gamedvr-fso-disabler
 .\Run.bat
 ```
 
-No parameters, no configuration. Run and done.
+**Or download the ZIP** (no PowerShell needed): click **Code ▸ Download ZIP** at the top of this page, unzip, then double-click **`Run.bat`** and click **Yes** on the UAC prompt.
+
+Whichever method you use: click **Yes** on the UAC prompt (the script requests admin rights on its own), then **sign out and back in** (or reboot). No parameters, no configuration.
 
 ## What It Does
 
