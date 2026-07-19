@@ -7,6 +7,7 @@
 An open-source PowerShell script that **disables Game DVR / Xbox Game Bar capture** and **Fullscreen Optimizations (FSO)** on Windows 10/11 — the two background features most often behind stutters, overlay pop-ups, and capture-related frame drops.
 Zero install. Zero dependencies. Built-in `.reg` undo.
 
+[![lint](https://img.shields.io/github/actions/workflow/status/vadyaravadim/gamedvr-fso-disabler/lint.yml?label=lint&logo=powershell)](https://github.com/vadyaravadim/gamedvr-fso-disabler/actions/workflows/lint.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Windows 10/11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows)](https://www.microsoft.com/windows)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?logo=powershell&logoColor=white)](https://docs.microsoft.com/en-us/powershell/)
