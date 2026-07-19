@@ -12,6 +12,7 @@ Zero install. Zero dependencies. Built-in `.reg` undo.
 [![Windows 10/11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows)](https://www.microsoft.com/windows)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?logo=powershell&logoColor=white)](https://docs.microsoft.com/en-us/powershell/)
 [![Latest release](https://img.shields.io/github/v/release/vadyaravadim/gamedvr-fso-disabler)](https://github.com/vadyaravadim/gamedvr-fso-disabler/releases)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/gamedvr-fso-disabler?logo=powershell&label=PS%20Gallery)](https://www.powershellgallery.com/packages/gamedvr-fso-disabler)
 ![GitHub Stars](https://img.shields.io/github/stars/vadyaravadim/gamedvr-fso-disabler?style=social)
 
 </div>
@@ -26,6 +27,15 @@ Zero install. Zero dependencies. Built-in `.reg` undo.
 2. Double-click **`Run.bat`**.
 3. Click **Yes** on the UAC prompt (the script requests admin rights on its own).
 4. **Sign out and back in** (or reboot).
+
+**Or from the PowerShell Gallery:**
+
+```powershell
+Install-Script gamedvr-fso-disabler
+gamedvr-fso-disabler                 # then run it by name (open a NEW PowerShell window first, so the Scripts folder is on PATH)
+```
+
+The script self-elevates. Update later with `Update-Script gamedvr-fso-disabler`.
 
 **One-liner** instead (in any PowerShell — it self-elevates):
 
