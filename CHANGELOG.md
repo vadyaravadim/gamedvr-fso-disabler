@@ -43,10 +43,11 @@ verbatim into the release and fails the release if the tag has no section here.
 - First release. Turns off Game DVR / Xbox Game Bar background capture through the documented
   `AllowGameDVR` machine policy plus the per-user `GameDVR` values, and turns off Fullscreen Optimizations
   globally through the `GameConfigStore` FSE values - eight values in total, each printed with its current
-  and target state before anything is written.
+  and target state before anything is written. The changes take hold once you sign out and back in.
 - Writes a `.reg` undo file next to the script before making any change, holding the previous state of
-  every value. Double-clicking it reverts everything. The snapshot is value-level rather than whole-key, so
-  reverting cannot wipe settings this tool never wrote - your capture bitrate and hotkeys are left alone.
+  every value. Double-clicking the `gamedvr_fso_undo_*.reg` it leaves behind reverts everything. The
+  snapshot is value-level rather than whole-key, so reverting cannot wipe settings this tool never wrote -
+  your capture bitrate and hotkeys are left alone.
 - A run that finds every value already at target changes nothing and writes no undo file, so a repeat run
   cannot leave you with a "revert" file that restores the tweaked state instead of the original.
 - Forwards the launching user's SID through the UAC prompt. When UAC elevates into a different
@@ -54,8 +55,11 @@ verbatim into the release and fails the release if the tag has no section here.
   values would have silently landed in the wrong profile.
 - Preserves the original value type in the undo file. A value another tweaker left behind as a string or a
   binary blob instead of a DWORD is snapshotted as what it actually was, so the revert restores it exactly.
-- Self-elevates through UAC, keeps the elevated window open on both success and error, and depends on
-  nothing outside Windows.
+  A value that was absent before the run is recorded as absent, so reverting deletes it again rather than
+  leaving this tool's own DWORD behind.
+- Self-elevates through UAC: double-click the bundled `Run.bat` or start the script yourself, and it asks
+  for admin rights on its own. It keeps the elevated window open on both success and error, runs on
+  Windows 10 and Windows 11, and depends on nothing outside Windows.
 
 [Unreleased]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.0.1...HEAD
 [1.0.1]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.0.0...v1.0.1
