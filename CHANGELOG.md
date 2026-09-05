@@ -9,6 +9,13 @@ verbatim into the release and fails the release if the tag has no section here.
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-09-05
+
+### Changed
+
+- `Run.bat` now waits for a keypress before its window closes, so if the launch itself fails - the
+  script blocked or missing next to it - the reason stays on screen instead of the window vanishing.
+
 ### Fixed
 
 - The copy a piped `irm ... | iex` run saves into your user profile was written with a UTF-8 BOM, which
@@ -61,6 +68,7 @@ verbatim into the release and fails the release if the tag has no section here.
   for admin rights on its own. It keeps the elevated window open on both success and error, runs on
   Windows 10 and Windows 11, and depends on nothing outside Windows.
 
-[Unreleased]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/vadyaravadim/gamedvr-fso-disabler/releases/tag/v1.0.0
