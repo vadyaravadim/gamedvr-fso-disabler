@@ -15,6 +15,8 @@ Zero install. Zero dependencies. Built-in `.reg` undo.
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/gamedvr-fso-disabler?logo=powershell&label=PS%20Gallery)](https://www.powershellgallery.com/packages/gamedvr-fso-disabler)
 ![GitHub Stars](https://img.shields.io/github/stars/vadyaravadim/gamedvr-fso-disabler?style=social)
 
+**Part of [RigPolice](https://rigpolice.com/?utm_source=github&utm_medium=readme&utm_campaign=gamedvr-fso-disabler) — free browser tests for your mouse, monitor and keyboard**
+
 </div>
 
 ---
