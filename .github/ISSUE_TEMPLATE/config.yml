@@ -1,9 +1,8 @@
 # Blank issues stay on: ideas and questions should not have to fit the bug form.
 blank_issues_enabled: true
+# No security link here: with private vulnerability reporting on, GitHub lists its own
+# "Report a security vulnerability" entry, and a second one only duplicated it.
 contact_links:
-  - name: Security vulnerability
-    url: https://github.com/vadyaravadim/gamedvr-fso-disabler/security/advisories/new
-    about: The script runs as Administrator - please report privately, not in a public issue.
   - name: Win+G still opens the Game Bar, FPS did not change, or the values came back after an update?
     url: https://github.com/vadyaravadim/gamedvr-fso-disabler#faq
     about: Expected - the FAQ explains what is disabled and what stays, what the tweak does and does not improve, and why a feature update can reset it.
