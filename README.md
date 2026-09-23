@@ -35,7 +35,7 @@ The script self-elevates. Update later with `Update-Script gamedvr-fso-disabler`
 **One-liner** instead (in any PowerShell — it self-elevates):
 
 ```powershell
-irm https://raw.githubusercontent.com/vadyaravadim/gamedvr-fso-disabler/main/gamedvr-fso-disabler.ps1 | iex
+irm https://github.com/vadyaravadim/gamedvr-fso-disabler/releases/latest/download/gamedvr-fso-disabler.ps1 | iex
 ```
 
 The script downloads itself to `%USERPROFILE%\gamedvr-fso-disabler.ps1` (not a temp folder) on purpose: the `gamedvr_fso_undo_*.reg` rollback file is written next to it and must survive automatic temp cleanup. An existing copy at that path that differs is kept as `.bak`.
@@ -51,6 +51,18 @@ cd gamedvr-fso-disabler
 **Or download the ZIP** (no PowerShell needed): click **Code ▸ Download ZIP** at the top of this page, unzip, then double-click **`Run.bat`** and click **Yes** on the UAC prompt.
 
 Whichever method you use: click **Yes** on the UAC prompt (the script requests admin rights on its own), then **sign out and back in** (or reboot). No parameters, no configuration.
+
+### Running it again
+
+To re-apply after a Windows update resets the values, run it the way you installed it:
+
+| Installed via | Command |
+|---------------|---------|
+| PowerShell Gallery | `gamedvr-fso-disabler` |
+| ZIP or clone | `.\Run.bat` from the script's folder |
+| One-liner | `powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\gamedvr-fso-disabler.ps1"` |
+
+Calling `.\gamedvr-fso-disabler.ps1` directly only works if your execution policy allows scripts — Windows blocks them by default, which is what `Run.bat` and `-ExecutionPolicy Bypass` get around.
 
 ## What It Does
 
@@ -174,7 +186,7 @@ Those flip dozens to hundreds of settings at once. This does **one** focused twe
 
 ### Do the changes survive a reboot? A Windows update?
 
-Reboots — yes, they're plain registry values. Major Windows feature updates occasionally reset per-user gaming settings; if capture comes back after an update, run the script again.
+Reboots — yes, they're plain registry values. Major Windows feature updates occasionally reset per-user gaming settings; if capture comes back after an update, [run the script again](#running-it-again).
 
 ### Why does a game still stutter after this?
 

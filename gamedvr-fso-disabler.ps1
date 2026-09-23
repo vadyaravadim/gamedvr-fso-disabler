@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.0.0
+.VERSION 0.0.0
 
 .GUID 87a31f64-6a9a-4a19-8b74-4a634e74fb59
 
@@ -87,7 +87,7 @@ if (-not $PSCommandPath) {
     # holds the caller's command line, not the script body) - download the
     # script.
     try {
-        $body = Invoke-RestMethod 'https://raw.githubusercontent.com/vadyaravadim/gamedvr-fso-disabler/main/gamedvr-fso-disabler.ps1' -TimeoutSec 30
+        $body = Invoke-RestMethod 'https://github.com/vadyaravadim/gamedvr-fso-disabler/releases/latest/download/gamedvr-fso-disabler.ps1' -TimeoutSec 30
     } catch {
         Write-Host "ERROR: could not download the script ($($_.Exception.Message)). Check your internet connection, or save the script to a file and run it from there." -ForegroundColor Red
         return
@@ -125,6 +125,18 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
     }
     return
 }
+
+# Read from this file's own PSScriptInfo block - the one place the version
+# lives (release.yml stamps the tag into it). 0.0.0 is the committed
+# placeholder: a clone or ZIP of main, not a release.
+$version = [regex]::Match((Get-Content $PSCommandPath -Raw), '(?m)^\.VERSION\s+(\S+)').Groups[1].Value
+$version = if ($version -eq '0.0.0') { 'dev build' } else { "v$version" }
+
+Write-Host ""
+Write-Host "===================================" -ForegroundColor Cyan
+Write-Host "  GAMEDVR + FSO DISABLER $version" -ForegroundColor Cyan
+Write-Host "===================================" -ForegroundColor Cyan
+Write-Host ""
 
 # Per-user values go to the pre-elevation user's hive when UAC switched accounts.
 if ($UserSid -and $UserSid -ne $identity.User.Value) {
@@ -165,12 +177,6 @@ $tweaks = @(
     [PSCustomObject]@{ Path = $gcs; Name = 'GameDVR_DXGIHonorFSEWindowsCompatible'; Value = 1; Label = 'Apply FSE behavior to DXGI (compat path)' }
     [PSCustomObject]@{ Path = $gcs; Name = 'GameDVR_EFSEFeatureFlags';              Value = 0; Label = 'Enhanced FSE features off' }
 )
-
-Write-Host ""
-Write-Host "===================================" -ForegroundColor Cyan
-Write-Host "  GAMEDVR + FSO DISABLER" -ForegroundColor Cyan
-Write-Host "===================================" -ForegroundColor Cyan
-Write-Host ""
 
 Write-Host "Current state -> target:"
 foreach ($t in $tweaks) {

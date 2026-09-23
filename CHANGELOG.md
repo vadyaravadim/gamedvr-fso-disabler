@@ -9,6 +9,22 @@ verbatim into the release and fails the release if the tag has no section here.
 
 ## [Unreleased]
 
+### Added
+
+- The banner shows the script version (`GAMEDVR + FSO DISABLER v1.0.3`), so you can tell at a glance
+  whether the copy you are running is the current release - and a bug report that includes the output
+  says which version it is about. A copy cloned or zipped from `main` rather than taken from a release
+  says `dev build`.
+
+### Changed
+
+- The `irm ... | iex` one-liner, and the copy it saves into your user profile, now download the latest
+  tagged release instead of whatever sits on `main`. Until now the one-liner ran - as Administrator - a
+  file that had not been through the release checks and had no checksum or provenance behind it. It is
+  now byte-for-byte the release asset, so `SHA256SUMS.txt` and `gh attestation verify` cover it too. The
+  old command keeps working; swap the URL for the one in the README when convenient.
+- A release is no longer published unless `lint` and `ascii-check` pass on the tagged commit.
+
 ## [1.0.2] - 2026-09-05
 
 ### Changed
