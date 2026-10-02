@@ -251,4 +251,6 @@ Write-Host "  - Fullscreen Optimizations: DISABLED (globally, for this user)"
 Write-Host ""
 Write-Host "SIGN OUT and back in (or reboot) for all changes to take effect." -ForegroundColor Green
 Write-Host "Revert any time: double-click the undo file above, then sign out/in." -ForegroundColor DarkGray
+Write-Host ""
+Write-Host "Useful? A star on GitHub helps others find it: https://github.com/vadyaravadim/gamedvr-fso-disabler"
 Wait-IfElevatedWindow
