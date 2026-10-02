@@ -13,9 +13,11 @@ Zero install. Zero dependencies. Built-in `.reg` undo.
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?logo=powershell&logoColor=white)](https://docs.microsoft.com/en-us/powershell/)
 [![Latest release](https://img.shields.io/github/v/release/vadyaravadim/gamedvr-fso-disabler)](https://github.com/vadyaravadim/gamedvr-fso-disabler/releases)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/gamedvr-fso-disabler?logo=powershell&label=PS%20Gallery)](https://www.powershellgallery.com/packages/gamedvr-fso-disabler)
-![GitHub Stars](https://img.shields.io/github/stars/vadyaravadim/gamedvr-fso-disabler?style=social)
+[![GitHub Stars](https://img.shields.io/github/stars/vadyaravadim/gamedvr-fso-disabler?style=social)](https://github.com/vadyaravadim/gamedvr-fso-disabler/stargazers)
 
 **Part of the [RigPolice Latency Toolbox](https://rigpolice.com/system/latency-toolbox/?utm_source=github&utm_medium=readme&utm_campaign=gamedvr-fso-disabler) — six open-source Windows latency scripts, with what we measured and what we have not yet**
+
+If it fixes your stutters, a ⭐ helps others find it.
 
 </div>
 
