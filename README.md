@@ -64,6 +64,8 @@ To re-apply after a Windows update resets the values, run it the way you install
 | ZIP or clone | `.\Run.bat` from the script's folder |
 | One-liner | `powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\gamedvr-fso-disabler.ps1"` |
 
+**Just checking?** Add `-Status` to any of these commands: it shows every value next to its target and changes nothing, so it needs no admin rights. That is the quick way to see whether an update reset them.
+
 Calling `.\gamedvr-fso-disabler.ps1` directly only works if your execution policy allows scripts — Windows blocks them by default, which is what `Run.bat` and `-ExecutionPolicy Bypass` get around.
 
 ## What It Does
@@ -80,7 +82,7 @@ Real output from a Windows 11 machine (24H2):
 
 ```
 ===================================
-  GAMEDVR + FSO DISABLER
+  GAMEDVR + FSO DISABLER vX.Y.Z
 ===================================
 
 Current state -> target:
@@ -99,7 +101,19 @@ Applying...
   [OK ] AllowGameDVR = 0
   [OK ] AppCaptureEnabled = 0
   ...
+
+===================================
+  DONE
+===================================
+
+Applied:
+  - Game DVR / Game Bar capture: DISABLED (policy + user values)
+  - Fullscreen Optimizations: DISABLED (globally, for this user)
+
 SIGN OUT and back in (or reboot) for all changes to take effect.
+Revert any time: double-click the undo file above, then sign out/in.
+
+Useful? A star on GitHub helps others find it: https://github.com/vadyaravadim/gamedvr-fso-disabler
 ```
 
 > `[ok]` = already at the target value on this machine, `[->]` = will be changed. Values already correct are still recorded in the undo file. If **all** values are already at target, the script changes nothing and writes no undo file.
@@ -137,14 +151,7 @@ After signing back in:
 
 - Press **Win+G** → the capture widget is disabled (Game Bar itself still opens; capture is dead)
 - **Settings ▸ Gaming ▸ Captures** → "Record what happened" is off and greyed out by policy
-- Or check the values directly:
-
-```powershell
-Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR' -Name AllowGameDVR
-Get-ItemProperty 'HKCU:\System\GameConfigStore' -Name GameDVR_FSEBehaviorMode
-```
-
-`AllowGameDVR` should be `0`, `GameDVR_FSEBehaviorMode` should be `2`.
+- Or run the script with `-Status` (no admin rights needed): all eight values should show `[ok]`.
 
 ## Reverting
 

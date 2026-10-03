@@ -6,6 +6,11 @@ Optimizations (the `GameConfigStore` FSE values) - eight registry values, listed
 Part of a family of six single-script Windows tuning tools that share this layout: one `.ps1`, `Run.bat`,
 `PSScriptAnalyzerSettings.psd1`, and the same three workflows.
 
+**`-Status` skips elevation on purpose** - it only reads, and a UAC prompt for a read-only check is what
+makes people stop checking. Unelevated, `HKCU` is the launching user's own hive, so `-UserSid` is not
+needed there. The `irm | iex` rerun forwards `-Status`; dropping it would turn a read-only request into a
+full elevated run that writes.
+
 ## Invariants the undo file depends on
 
 - **The undo `.reg` is value-level, never `[-key]`.** A key-deletion stanza would also wipe values this

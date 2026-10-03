@@ -9,11 +9,22 @@ verbatim into the release and fails the release if the tag has no section here.
 
 ## [Unreleased]
 
+### Added
+
+- `-Status` shows all eight values next to their targets and changes nothing. It needs no admin rights,
+  so checking whether a Windows update turned Game DVR or Fullscreen Optimizations back on no longer
+  costs a UAC prompt - or a hand-typed registry query that covered only two of the eight values.
+
 ### Changed
 
 - A successful run now ends with one line linking to this repo and asking for a star, so people who got
   the one-liner from an article or a chatbot know where the tool lives. It is printed only after the
   tweaks were applied.
+
+### Fixed
+
+- The sample output in the README showed a banner without the version and stopped before the end of the
+  run; it now matches what the script prints.
 
 ## [1.0.3] - 2026-09-23
 

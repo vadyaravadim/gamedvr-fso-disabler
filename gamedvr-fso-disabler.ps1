@@ -40,6 +40,9 @@
 
     A .reg undo file with the previous state of every value is written next to
     the script BEFORE any change. Zero external dependencies.
+.PARAMETER Status
+    Show the current value of every setting next to its target, change
+    nothing. Does not need Administrator rights.
 .NOTES
     Sign out and back in (or reboot) for all changes to take effect.
     Revert: double-click the gamedvr_fso_undo_*.reg file, then sign out/in.
@@ -51,11 +54,14 @@
 
     Double-click Run.bat, or right-click this file > Run with PowerShell.
     No parameters needed - it elevates itself.
+.EXAMPLE
+    .\gamedvr-fso-disabler.ps1 -Status
 .LINK
     https://github.com/vadyaravadim/gamedvr-fso-disabler
 #>
 [CmdletBinding()]
 param(
+    [switch]$Status,
     [switch]$Elevated,  # internal: set by the self-elevation relaunch
     [string]$UserSid    # internal: SID of the pre-elevation user (HKCU hive target)
 )
@@ -101,14 +107,17 @@ if (-not $PSCommandPath) {
     # the saved copy and violates the ASCII/no-BOM invariant the repo enforces.
     [IO.File]::WriteAllText($saved, $body, [Text.UTF8Encoding]::new($false))
     Write-Host "Script saved to: $saved (the undo file will be written next to it)" -ForegroundColor Cyan
-    powershell -NoProfile -ExecutionPolicy Bypass -File $saved
+    # @(): splatting a scalar string breaks powershell.exe -File switch binding on PS 5.1.
+    $fwd = @(if ($Status) { '-Status' })
+    powershell -NoProfile -ExecutionPolicy Bypass -File $saved @fwd
     # The rerun's exit code stays in $LASTEXITCODE for scripted callers.
     return
 }
 
+# ---- Everything below -Status writes the registry: Administrator required ----
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = New-Object Security.Principal.WindowsPrincipal($identity)
-if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+if (-not $Status -and -not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "Not running as Administrator. Requesting elevation..." -ForegroundColor Yellow
     try {
         # Forward the launching user's SID: if UAC elevates to a DIFFERENT admin
@@ -190,6 +199,8 @@ foreach ($t in $tweaks) {
     $mark = if ($ok) { 'ok' } else { '->' }
     Write-Host ("  [{0}] {1} = {2} -> {3}  ({4})" -f $mark, $t.Name, $oldText, $t.Value, $t.Label) -ForegroundColor $(if ($ok) { 'DarkGray' } else { 'Yellow' })
 }
+
+if ($Status) { Wait-IfElevatedWindow; return }
 
 # Nothing to change -> no undo file: a repeat-run snapshot would record the
 # already-tweaked state, and double-clicking that newest file would silently
