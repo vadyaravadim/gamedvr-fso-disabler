@@ -66,8 +66,6 @@ param(
     [string]$UserSid    # internal: SID of the pre-elevation user (HKCU hive target)
 )
 
-$ErrorActionPreference = 'Stop'
-
 # Keep the self-elevated window open so the user can read the output.
 function Wait-IfElevatedWindow {
     if ($Elevated) { Read-Host "Press Enter to close" | Out-Null }
@@ -93,14 +91,14 @@ if (-not $PSCommandPath) {
     # holds the caller's command line, not the script body) - download the
     # script.
     try {
-        $body = Invoke-RestMethod 'https://github.com/vadyaravadim/gamedvr-fso-disabler/releases/latest/download/gamedvr-fso-disabler.ps1' -TimeoutSec 30
+        $body = Invoke-RestMethod 'https://github.com/vadyaravadim/gamedvr-fso-disabler/releases/latest/download/gamedvr-fso-disabler.ps1' -TimeoutSec 30 -ErrorAction Stop
     } catch {
         Write-Host "ERROR: could not download the script ($($_.Exception.Message)). Check your internet connection, or save the script to a file and run it from there." -ForegroundColor Red
         return
     }
     $saved = Join-Path $env:USERPROFILE 'gamedvr-fso-disabler.ps1'
     if ((Test-Path $saved) -and ([IO.File]::ReadAllText($saved) -cne $body)) {
-        Copy-Item $saved "$saved.bak" -Force
+        Copy-Item $saved "$saved.bak" -Force -ErrorAction Stop
         Write-Host "Existing $saved differs - previous copy kept as $saved.bak" -ForegroundColor Yellow
     }
     # UTF8Encoding($false) = no BOM: a BOM would break a later `irm | iex` of
@@ -113,6 +111,10 @@ if (-not $PSCommandPath) {
     # The rerun's exit code stays in $LASTEXITCODE for scripted callers.
     return
 }
+
+# Only now: under `irm | iex` the block above runs in the caller's own session,
+# where Stop would stay behind in their console after the script is done.
+$ErrorActionPreference = 'Stop'
 
 # ---- Everything below -Status writes the registry: Administrator required ----
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -138,7 +140,7 @@ if (-not $Status -and -not $principal.IsInRole([Security.Principal.WindowsBuiltI
 # Read from this file's own PSScriptInfo block - the one place the version
 # lives (release.yml stamps the tag into it). 0.0.0 is the committed
 # placeholder: a clone or ZIP of main, not a release.
-$version = [regex]::Match((Get-Content $PSCommandPath -Raw), '(?m)^\.VERSION\s+(\S+)').Groups[1].Value
+$version = [regex]::Match((Get-Content -LiteralPath $PSCommandPath -Raw), '(?m)^\.VERSION\s+(\S+)').Groups[1].Value
 $version = if ($version -eq '0.0.0') { 'dev build' } else { "v$version" }
 
 Write-Host ""
@@ -195,7 +197,8 @@ foreach ($t in $tweaks) {
     $ok = ($old -is [int]) -and ($old -eq $t.Value)
     $t | Add-Member NoteProperty Old $old
     $t | Add-Member NoteProperty Ok $ok
-    $oldText = if ($null -eq $old) { '(absent)' } else { $old }
+    # A non-DWORD shows its type: a REG_SZ '0' would otherwise read as '0 -> 0' next to a '->' mark.
+    $oldText = if ($null -eq $old) { '(absent)' } elseif ($old -is [int]) { $old } else { "'$old' ($($old.GetType().Name), not DWORD)" }
     $mark = if ($ok) { 'ok' } else { '->' }
     Write-Host ("  [{0}] {1} = {2} -> {3}  ({4})" -f $mark, $t.Name, $oldText, $t.Value, $t.Label) -ForegroundColor $(if ($ok) { 'DarkGray' } else { 'Yellow' })
 }
@@ -222,7 +225,7 @@ if (-not ($tweaks | Where-Object { -not $_.Ok })) {
 $stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 $undoFile = Join-Path $PSScriptRoot "gamedvr_fso_undo_$stamp.reg"
 $n = 1
-while (Test-Path $undoFile) { $undoFile = Join-Path $PSScriptRoot ("gamedvr_fso_undo_{0}_{1}.reg" -f $stamp, $n++) }
+while (Test-Path -LiteralPath $undoFile) { $undoFile = Join-Path $PSScriptRoot ("gamedvr_fso_undo_{0}_{1}.reg" -f $stamp, $n++) }
 $undo = New-Object System.Text.StringBuilder
 [void]$undo.AppendLine('Windows Registry Editor Version 5.00')
 [void]$undo.AppendLine('')
@@ -237,7 +240,7 @@ foreach ($group in ($tweaks | Group-Object Path)) {
     }
     [void]$undo.AppendLine('')
 }
-Set-Content -Path $undoFile -Value $undo.ToString() -Encoding Unicode
+Set-Content -LiteralPath $undoFile -Value $undo.ToString() -Encoding Unicode
 Write-Host ""
 Write-Host "Undo file saved: $undoFile" -ForegroundColor Cyan
 Write-Host ""

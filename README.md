@@ -25,22 +25,22 @@ If it fixes your stutters, a ⭐ helps others find it.
 
 ## Quick Start
 
-**Easiest — from the PowerShell Gallery:**
-
-```powershell
-Install-Script gamedvr-fso-disabler
-gamedvr-fso-disabler                 # then run it by name (open a NEW PowerShell window first, so the Scripts folder is on PATH)
-```
-
-The script self-elevates. Update later with `Update-Script gamedvr-fso-disabler`.
-
-**One-liner** instead (in any PowerShell — it self-elevates):
+**Easiest — one line, in any PowerShell** (it self-elevates):
 
 ```powershell
 irm https://github.com/vadyaravadim/gamedvr-fso-disabler/releases/latest/download/gamedvr-fso-disabler.ps1 | iex
 ```
 
 The script downloads itself to `%USERPROFILE%\gamedvr-fso-disabler.ps1` (not a temp folder) on purpose: the `gamedvr_fso_undo_*.reg` rollback file is written next to it and must survive automatic temp cleanup. An existing copy at that path that differs is kept as `.bak`.
+
+**From the PowerShell Gallery**, in PowerShell 7 (`pwsh`):
+
+```powershell
+Install-Script gamedvr-fso-disabler
+gamedvr-fso-disabler                 # then run it by name (open a NEW PowerShell window first, so the Scripts folder is on PATH)
+```
+
+The script self-elevates. Update later with `Update-Script gamedvr-fso-disabler`. Not in the Windows PowerShell 5.1 that comes with Windows: there `Install-Script` wants an admin console and the default execution policy blocks the installed script — use the one-liner instead.
 
 **Or clone:**
 
@@ -60,7 +60,7 @@ To re-apply after a Windows update resets the values, run it the way you install
 
 | Installed via | Command |
 |---------------|---------|
-| PowerShell Gallery | `gamedvr-fso-disabler` |
+| PowerShell Gallery (PowerShell 7) | `gamedvr-fso-disabler` |
 | ZIP or clone | `.\Run.bat` from the script's folder |
 | One-liner | `powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\gamedvr-fso-disabler.ps1"` |
 

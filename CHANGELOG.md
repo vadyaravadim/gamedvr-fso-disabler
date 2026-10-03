@@ -23,6 +23,19 @@ verbatim into the release and fails the release if the tag has no section here.
 
 ### Fixed
 
+- A value another tweaker had left as text (`"0"` instead of the number 0) showed as `= 0 -> 0` next to a
+  "will change" mark, so it looked like the script was about to rewrite something already correct. It
+  now shows the value with its type, e.g. `'0' (String, not DWORD) -> 0`. What gets written, and what the
+  undo file restores, is unchanged.
+- The README's first install method, the PowerShell Gallery, failed in the Windows PowerShell 5.1 that
+  comes with Windows: `Install-Script` stopped with "Administrator rights are required", and the installed
+  script was then blocked by the default execution policy. The one-liner, which works in any PowerShell,
+  is now listed first, and the Gallery route is marked as PowerShell 7.
+- After the `irm | iex` one-liner, the PowerShell window you ran it from was left treating every error as
+  fatal, so a later command or another script in that window could stop on an error it would normally
+  shrug off. The one-liner no longer changes that setting in your window.
+- Run from a folder with `[` or `]` in its path, the script stopped at once with "A parameter cannot be
+  found that matches parameter name 'Raw'". It now runs, and writes its undo file, from any folder.
 - The sample output in the README showed a banner without the version and stopped before the end of the
   run; it now matches what the script prints.
 
