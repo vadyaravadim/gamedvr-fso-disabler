@@ -4,7 +4,7 @@
 
 **Disable Game DVR. Kill Fullscreen Optimizations. One command.**
 
-An open-source PowerShell script that **disables Game DVR / Xbox Game Bar capture** and **Fullscreen Optimizations (FSO)** on Windows 10/11 — the two background features most often behind stutters, overlay pop-ups, and capture-related frame drops.
+An open-source PowerShell script that **disables Game DVR / Xbox Game Bar capture** and **Fullscreen Optimizations (FSO)** on Windows 10/11 — two features tweak guides blame for stutter and Game Bar pop-ups mid-game.
 Zero install. Zero dependencies. Built-in `.reg` undo.
 
 [![lint](https://img.shields.io/github/actions/workflow/status/vadyaravadim/gamedvr-fso-disabler/lint.yml?label=lint&logo=powershell)](https://github.com/vadyaravadim/gamedvr-fso-disabler/actions/workflows/lint.yml)
@@ -17,7 +17,7 @@ Zero install. Zero dependencies. Built-in `.reg` undo.
 
 **Part of the [RigPolice Latency Toolbox](https://rigpolice.com/system/latency-toolbox/?utm_source=github&utm_medium=readme&utm_campaign=gamedvr-fso-disabler) — six open-source Windows latency scripts, with what we measured and what we have not yet**
 
-If it fixes your stutters, a ⭐ helps others find it.
+If it works for you, a ⭐ helps others find it.
 
 </div>
 
@@ -133,17 +133,19 @@ Useful? A star on GitHub helps others find it: https://github.com/vadyaravadim/g
 
 All values are DWORD. `AllowGameDVR` and the FSE values are the same ones every "disable Game DVR" / "disable fullscreen optimizations" guide has you set by hand — here they're applied in one run, with an undo file first.
 
-## The Problem: Why Game DVR and FSO Cause Stutters
+## The Problem: What Game DVR and FSO Do
 
-**Game DVR** keeps a capture pipeline warm behind every game so the Game Bar can record "what happened." That costs memory bandwidth and GPU time even when you never record — and on weaker systems it shows up as frame drops and stutter. Microsoft's own performance guidance for capture is clear: recording competes with the game for resources.
+**Game DVR** is the recording backend of the Xbox Game Bar. With background recording ("Record what happened") on, it records the game continuously so it can save the last moments on demand. On our Windows 11 machine that was already off (the `[ok]` row in the output above), so check **Settings ▸ Gaming ▸ Captures** before you blame it.
 
-**Fullscreen Optimizations** replace classic fullscreen-exclusive mode with an optimized borderless mode so overlays and fast Alt-Tab work. On many systems it's fine; on others it adds input latency or breaks frame pacing in specific titles — which is why the per-game "Disable fullscreen optimizations" checkbox exists. This script applies that behavior globally instead of exe-by-exe.
+**Fullscreen Optimizations** run fullscreen games in a mode [Microsoft describes](https://devblogs.microsoft.com/directx/demystifying-full-screen-optimizations/) as fullscreen exclusive with a quick way back to desktop composition, so overlays and fast Alt-Tab work. Microsoft says almost all players get the same performance as in fullscreen exclusive; players still report stutter or input lag in some titles, which is what the per-game "Disable fullscreen optimizations" checkbox is for. This script applies that behavior globally instead of exe-by-exe.
 
-**Symptoms this addresses:**
+**What people turn them off for:**
 
 - Frame drops or stutter that disappear when Game Bar capture is off
 - "You can't record right now" / Game Bar overlay popping up mid-game
 - Input lag or broken frame pacing in games that behave better in true fullscreen
+
+We have not measured the effect of either on frame times yet. Turn them off, compare your own frame-time graph, and undo if nothing changed.
 
 ## Verify
 
@@ -163,15 +165,15 @@ Ran the script several times? A run that finds nothing to change writes no undo 
 
 ### What is Game DVR?
 
-Game DVR is the recording backend of the **Xbox Game Bar** — it powers background recording ("Record what happened"), clips, and screenshots. To do that it keeps capture infrastructure active while you play, whether or not you ever press record.
+Game DVR is the recording backend of the **Xbox Game Bar** — it powers background recording ("Record what happened"), clips, and screenshots. Background recording is the part that runs while you play: it records continuously so it can save what just happened. On our Windows 11 machine it was off already.
 
 ### Does disabling Game DVR increase FPS?
 
-On systems where the capture pipeline is active it removes its overhead — users typically see fewer frame drops and less stutter rather than a higher average FPS. On a strong system with capture already idle, the difference can be near zero. It also stops the Game Bar overlay from popping up mid-game.
+We have not measured it. Turning Game DVR off stops background recording if it was running; on our Windows 11 machine it was off already. It also stops the Game Bar overlay from popping up mid-game.
 
 ### What are Fullscreen Optimizations in Windows 11?
 
-A Windows feature that silently replaces classic **fullscreen-exclusive** mode with an optimized borderless-windowed mode, so overlays, notifications, and Alt-Tab work seamlessly. Most games run fine with it; some get worse frame pacing or higher input latency — those are the titles people set the per-exe "Disable fullscreen optimizations" checkbox for.
+A Windows feature that runs fullscreen games in a mode Microsoft describes as **fullscreen exclusive** with a quick way back to desktop composition, so overlays, notifications, and Alt-Tab work seamlessly. Microsoft says almost all players get the same performance as in fullscreen exclusive; players report worse frame pacing or input lag in some titles, and those are the ones people set the per-exe "Disable fullscreen optimizations" checkbox for.
 
 ### Should I disable Fullscreen Optimizations?
 
@@ -203,9 +205,9 @@ Then capture wasn't your bottleneck. Next usual suspects in order: GPU driver ov
 
 ## Related
 
-- [CPU Parking Disabler](https://github.com/vadyaravadim/cpu-parking-disabler) — disable CPU core parking on Windows 10/11 to fix micro-stutters and input lag
-- [MSI Mode Utility](https://github.com/vadyaravadim/msi-mode-utility) — enable MSI mode (Message Signaled Interrupts) for GPU, USB, network & audio devices to cut DPC latency and input lag
-- [Interrupt Affinity Utility](https://github.com/vadyaravadim/interrupt-affinity-utility) — pin GPU, network, USB & audio interrupts to specific CPU cores (P/E-core aware) to tame DPC latency
+- [CPU Parking Disabler](https://github.com/vadyaravadim/cpu-parking-disabler) — disable CPU core parking on Windows 10/11, with the parked-core count shown before and after
+- [MSI Mode Utility](https://github.com/vadyaravadim/msi-mode-utility) — enable MSI mode (Message Signaled Interrupts) for GPU, USB, network & audio devices
+- [Interrupt Affinity Utility](https://github.com/vadyaravadim/interrupt-affinity-utility) — pin GPU, network, USB & audio interrupts to specific CPU cores (P/E-core aware)
 - [Timer Resolution Utility](https://github.com/vadyaravadim/timer-resolution-utility) — set 0.5 ms timer resolution, disable dynamic tick, un-force HPET — with a built-in Sleep(1) benchmark
 - [Remove Hidden Devices](https://github.com/vadyaravadim/remove-hidden-devices) — remove ghost / hidden devices left behind by unplugged USB sticks, headsets & dongles cluttering Device Manager
 
@@ -219,7 +221,7 @@ Same idea across the series: one transparent PowerShell script, no binaries, you
 
 <div align="center">
 
-If this fixed your stutters, consider giving it a ⭐
+If this helped, consider giving it a ⭐
 
 [Report Issues](https://github.com/vadyaravadim/gamedvr-fso-disabler/issues)
 
