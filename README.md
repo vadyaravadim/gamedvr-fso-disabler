@@ -78,11 +78,13 @@ Rollback = double-click the undo file, then sign out/in. Nothing else is touched
 
 ## Before & After
 
-Real output from a Windows 11 machine (24H2):
+A one-liner run of v1.1.0 on our Windows 11 26H2 test PC, after we turned Game DVR and Fullscreen Optimizations back on (2026-11-07):
 
 ```
+Script saved to: C:\Users\you\gamedvr-fso-disabler.ps1 (the undo file will be written next to it)
+
 ===================================
-  GAMEDVR + FSO DISABLER vX.Y.Z
+  GAMEDVR + FSO DISABLER v1.1.0
 ===================================
 
 Current state -> target:
@@ -95,12 +97,17 @@ Current state -> target:
   [->] GameDVR_DXGIHonorFSEWindowsCompatible = 0 -> 1  (Apply FSE behavior to DXGI (compat path))
   [ok] GameDVR_EFSEFeatureFlags = 0 -> 0  (Enhanced FSE features off)
 
-Undo file saved: E:\gamedvr-fso-disabler\gamedvr_fso_undo_20260718_030740.reg
+Undo file saved: C:\Users\you\gamedvr_fso_undo_20261107_172504.reg
 
 Applying...
   [OK ] AllowGameDVR = 0
   [OK ] AppCaptureEnabled = 0
-  ...
+  [OK ] HistoricalCaptureEnabled = 0
+  [OK ] GameDVR_Enabled = 0
+  [OK ] GameDVR_FSEBehaviorMode = 2
+  [OK ] GameDVR_HonorUserFSEBehaviorMode = 1
+  [OK ] GameDVR_DXGIHonorFSEWindowsCompatible = 1
+  [OK ] GameDVR_EFSEFeatureFlags = 0
 
 ===================================
   DONE
