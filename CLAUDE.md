@@ -1,5 +1,7 @@
 # GameDVR & FSO Disabler
 
+Maintainer notes for Claude Code and the maintainer. Contributors start with [CONTRIBUTING.md](https://github.com/vadyaravadim/.github/blob/main/CONTRIBUTING.md); `rigpolice`, named below, is the maintainer's private website repository.
+
 A single self-contained PowerShell script (`gamedvr-fso-disabler.ps1`) that turns off Game DVR / Xbox Game
 Bar capture (the `AllowGameDVR` machine policy plus the per-user `GameDVR` values) and Fullscreen
 Optimizations (the `GameConfigStore` FSE values) - eight registry values, listed in the `$tweaks` array.
