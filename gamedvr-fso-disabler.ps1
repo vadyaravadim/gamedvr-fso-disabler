@@ -8,9 +8,9 @@
 
 .COMPANYNAME
 
-.COPYRIGHT
+.COPYRIGHT Copyright (c) 2026 vadyaravadim
 
-.TAGS Windows Windows10 Windows11 Gaming GameDVR GameBar FullscreenOptimizations FSO Performance Stutter Tweak Registry
+.TAGS Windows Windows10 Windows11 Gaming GameDVR GameBar FullscreenOptimizations FSO Performance Stutter Tweak Registry PSEdition_Desktop PSEdition_Core
 
 .LICENSEURI https://github.com/vadyaravadim/gamedvr-fso-disabler/blob/main/LICENSE
 
@@ -24,7 +24,7 @@
 
 .EXTERNALSCRIPTDEPENDENCIES
 
-.RELEASENOTES
+.RELEASENOTES https://github.com/vadyaravadim/gamedvr-fso-disabler/blob/main/CHANGELOG.md
 
 .PRIVATEDATA
 

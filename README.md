@@ -33,6 +33,8 @@ irm https://github.com/vadyaravadim/gamedvr-fso-disabler/releases/latest/downloa
 
 The script downloads itself to `%USERPROFILE%\gamedvr-fso-disabler.ps1` (not a temp folder) on purpose: the `gamedvr_fso_undo_*.reg` rollback file is written next to it and must survive automatic temp cleanup. An existing copy at that path that differs is kept as `.bak`.
 
+**Check it before it runs:** download `gamedvr-fso-disabler.ps1` from the [latest release](https://github.com/vadyaravadim/gamedvr-fso-disabler/releases/latest), verify it as [SECURITY.md](SECURITY.md#verifying-a-release) shows, then run that file with `powershell -ExecutionPolicy Bypass -File .\gamedvr-fso-disabler.ps1`.
+
 **From the PowerShell Gallery**, in PowerShell 7 (`pwsh`):
 
 ```powershell
@@ -154,6 +156,14 @@ All values are DWORD. `AllowGameDVR` and the FSE values are the same ones every 
 
 We have not measured the effect of either on frame times yet. Turn them off, compare your own frame-time graph, and undo if nothing changed.
 
+## Requirements
+
+| | |
+|---|---|
+| **Windows** | 10, 11 |
+| **PowerShell** | Windows PowerShell 5.1 (ships with Windows 10/11); PowerShell 7 works too |
+| **Rights** | Administrator (the script self-elevates via UAC); `-Status` needs none |
+
 ## Verify
 
 After signing back in:
@@ -184,7 +194,7 @@ A Windows feature that runs fullscreen games in a mode Microsoft describes as **
 
 ### Should I disable Fullscreen Optimizations?
 
-If your games run flawlessly — leave it. If you see stutter or input lag that vanishes in true fullscreen, disabling FSO is the standard fix. This script sets it globally; the undo file takes you back in one double-click. On the newest Windows 11 builds (24H2+) Microsoft has been reworking windowed/fullscreen presentation, so the win is title- and build-dependent — test your own games.
+If your games run flawlessly — leave it. Guides recommend disabling FSO when stutter or input lag goes away in true fullscreen; we have not measured it. This script sets it globally; the undo file takes you back in one double-click. On the newest Windows 11 builds (24H2+) Microsoft has been reworking windowed/fullscreen presentation, so whether it changes anything depends on the title and the build — test your own games.
 
 ### Is it safe?
 
@@ -208,7 +218,11 @@ Reboots — yes, they're plain registry values. Major Windows feature updates oc
 
 ### Why does a game still stutter after this?
 
-Then capture wasn't your bottleneck. Next usual suspects in order: GPU driver overlays (GeForce Experience / ReLive), CPU core parking, legacy-mode interrupts, timer resolution — the last three are exactly what the [related utilities](#related) cover.
+We have not measured whether turning off capture or FSO changes stutter. Guides go on to GPU driver overlays (GeForce Experience / ReLive), CPU core parking, legacy-mode interrupts and timer resolution; the last three have their own scripts among the [related utilities](#related), and each README says what we measured and what we have not.
+
+### How do I remove the script itself?
+
+Apply the undo files first if you want the old values back (see [Reverting](#reverting)). Then delete what the script left: with the one-liner, `gamedvr-fso-disabler.ps1`, a `gamedvr-fso-disabler.ps1.bak` if there is one, and the `gamedvr_fso_undo_*.reg` files in `%USERPROFILE%`; with the ZIP or a clone, the folder. From the PowerShell Gallery, the undo files sit in the folder `(Get-InstalledScript gamedvr-fso-disabler).InstalledLocation` prints; delete them, then run `Uninstall-Script gamedvr-fso-disabler`. The script installs nothing else.
 
 ## Related
 
@@ -219,6 +233,10 @@ Then capture wasn't your bottleneck. Next usual suspects in order: GPU driver ov
 - [Remove Hidden Devices](https://github.com/vadyaravadim/remove-hidden-devices) — remove ghost / hidden devices left behind by unplugged USB sticks, headsets & dongles cluttering Device Manager
 
 Same idea across the series: one transparent PowerShell script, no binaries, you see exactly what changes.
+
+## Disclaimer
+
+The script changes one machine-wide policy and seven per-user registry values and writes a `.reg` undo file first; double-clicking it puts them back. Use at your own risk.
 
 ## License
 

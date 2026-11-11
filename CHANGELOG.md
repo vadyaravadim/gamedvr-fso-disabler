@@ -14,6 +14,10 @@ section is empty or its compare link at the bottom is missing.
 
 - Each release also carries `gamedvr-fso-disabler.ps1.sigstore.json`, the script's signed build provenance, as
   a file next to it.
+- The README's Quick Start says how to check a downloaded script before running it, and SECURITY.md now
+  starts with `gh release verify-asset`, which works for every immutable release whichever workflow built it.
+- The README FAQ says how to remove the script and the files it leaves behind.
+- The README has Requirements and Disclaimer sections like the other five scripts.
 
 ### Changed
 
@@ -24,6 +28,10 @@ section is empty or its compare link at the bottom is missing.
 - Checking that a downloaded script was built from this repository takes a new `gh attestation verify` command
   from this release on: releases are now built by the release workflow all six RigPolice scripts share.
   SECURITY.md has both commands.
+- On the PowerShell Gallery the script page links this changelog as its release notes, shows the license's
+  copyright line, and lists the script for both Windows PowerShell and PowerShell 7.
+- The FAQ no longer calls disabling FSO "the standard fix" or ranks the next stutter suspects as fact; neither
+  is measured, and the answers now say so.
 
 ## [1.1.0] - 2026-10-03
 
