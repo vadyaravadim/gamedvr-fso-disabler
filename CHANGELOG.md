@@ -10,6 +10,11 @@ section is empty or its compare link at the bottom is missing.
 
 ## [Unreleased]
 
+### Added
+
+- Each release also carries `gamedvr-fso-disabler.ps1.sigstore.json`, the script's signed build provenance, as
+  a file next to it.
+
 ### Changed
 
 - Releases are tagged only after every check has passed on the commit they are built from, and the
