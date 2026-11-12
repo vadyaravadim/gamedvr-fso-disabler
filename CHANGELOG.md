@@ -10,6 +10,8 @@ section is empty or its compare link at the bottom is missing.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-12
+
 ### Added
 
 - Each release also carries `gamedvr-fso-disabler.ps1.sigstore.json`, the script's signed build provenance, as
@@ -142,7 +144,8 @@ section is empty or its compare link at the bottom is missing.
   for admin rights on its own. It keeps the elevated window open on both success and error, runs on
   Windows 10 and Windows 11, and depends on nothing outside Windows.
 
-[Unreleased]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/vadyaravadim/gamedvr-fso-disabler/compare/v1.0.1...v1.0.2
